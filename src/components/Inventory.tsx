@@ -51,13 +51,13 @@ const Inventory = ({ weapons, items, onUseItem }: InventoryProps) => {
   
   return (
     <Card className="w-full max-w-sm bg-gray-800 border-gray-700 mt-4">
-      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
-        <Button className="w-full bg-green-700 hover:bg-green-800">
-          Инвентарь
-        </Button>
-      </DialogTrigger>
-      
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button className="w-full bg-green-700 hover:bg-green-800" onClick={() => setIsOpen(true)}>
+            Инвентарь
+          </Button>
+        </DialogTrigger>
+        
         <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Инвентарь</DialogTitle>

@@ -93,13 +93,13 @@ const Shop = ({ resources, onPurchase }: ShopProps) => {
   
   return (
     <Card className="w-full max-w-sm bg-gray-800 border-gray-700 mt-4">
-      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
-        <Button className="w-full bg-purple-700 hover:bg-purple-800">
-          Открыть магазин
-        </Button>
-      </DialogTrigger>
-      
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button className="w-full bg-purple-700 hover:bg-purple-800" onClick={() => setIsOpen(true)}>
+            Открыть магазин
+          </Button>
+        </DialogTrigger>
+        
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Магазин удачи</DialogTitle>
