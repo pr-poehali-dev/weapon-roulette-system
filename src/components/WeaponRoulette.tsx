@@ -77,16 +77,32 @@ const WeaponRoulette = ({ onWeaponSelected, onCollectWeapon, activeItems }: Weap
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  // Инициализация аудио
-  useEffect(() => {
-    audioRef.current = new Audio('/spin.mp3'); // Предполагается, что файл размещен в /public
-    return () => {
+  // Безопасное воспроизведение звука
+  const playSound = (soundUrl: string) => {
+    try {
+      // Проверяем, существует ли уже аудио элемент
       if (audioRef.current) {
         audioRef.current.pause();
-        audioRef.current = null;
       }
-    };
-  }, []);
+      
+      // Создаем новый аудио элемент
+      audioRef.current = new Audio();
+      
+      // Обработчик ошибок для аудио
+      audioRef.current.onerror = (e) => {
+        console.log("Аудио не найдено или не поддерживается, используем заглушку");
+      };
+      
+      // Пробуем загрузить звук
+      audioRef.current.src = soundUrl;
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(error => {
+        console.log("Звук отключен или не поддерживается в браузере");
+      });
+    } catch (error) {
+      console.log("Произошла ошибка при воспроизведении звука");
+    }
+  };
   
   // Применяем эффекты активных предметов
   useEffect(() => {
@@ -106,10 +122,7 @@ const WeaponRoulette = ({ onWeaponSelected, onCollectWeapon, activeItems }: Weap
     if (spinning) return;
     
     // Воспроизведение звука вращения
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(err => console.error("Не удалось воспроизвести звук:", err));
-    }
+    playSound('/spin.mp3');
     
     setSpinning(true);
     setShowCollect(false);

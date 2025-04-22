@@ -19,16 +19,45 @@ const ZombieTarget = ({ onZombieClick, currentWeapon }: ZombieTargetProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const enemyRef = useRef<HTMLDivElement>(null);
   
-  // Инициализируем аудио для клика
-  useEffect(() => {
-    audioRef.current = new Audio('/click.mp3'); // Предполагается, что файл звука размещен в /public
-    return () => {
+  // Безопасное воспроизведение звука
+  const playSound = (soundUrl: string) => {
+    try {
+      // Проверяем, существует ли уже аудио элемент
       if (audioRef.current) {
         audioRef.current.pause();
-        audioRef.current = null;
       }
-    };
-  }, []);
+      
+      // Создаем новый аудио элемент
+      audioRef.current = new Audio();
+      
+      // Обработчик ошибок для аудио
+      audioRef.current.onerror = (e) => {
+        console.log("Аудио не найдено или не поддерживается, используем заглушку");
+      };
+      
+      // Пробуем загрузить звук
+      audioRef.current.src = soundUrl;
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(error => {
+        console.log("Звук отключен или не поддерживается в браузере");
+      });
+    } catch (error) {
+      console.log("Произошла ошибка при воспроизведении звука");
+    }
+  };
+  
+  // Функция для имитации звука через анимацию, если звук не доступен
+  const simulateSoundWithAnimation = () => {
+    // Добавляем класс анимации вместо звука
+    if (enemyRef.current) {
+      enemyRef.current.classList.add('sound-feedback-animation');
+      setTimeout(() => {
+        if (enemyRef.current) {
+          enemyRef.current.classList.remove('sound-feedback-animation');
+        }
+      }, 300);
+    }
+  };
   
   // Генерация типа врага
   useEffect(() => {
@@ -58,11 +87,9 @@ const ZombieTarget = ({ onZombieClick, currentWeapon }: ZombieTargetProps) => {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!currentWeapon) return;
     
-    // Воспроизведение звука клика
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(err => console.error("Не удалось воспроизвести звук:", err));
-    }
+    // Играем звук и делаем визуальную обратную связь
+    playSound('/click.mp3');
+    simulateSoundWithAnimation();
     
     setIsAttacking(true);
     
